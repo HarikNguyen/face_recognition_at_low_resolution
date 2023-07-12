@@ -164,8 +164,8 @@ cython_debug/
 
 # Dataset
 dataset/
-dataset_0/
-dataset_1/
+# all dataset with form dataset_*
+dataset_*/
 
 # CSV except name_index.csv
 *.csv

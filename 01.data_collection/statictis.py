@@ -4,14 +4,11 @@ import os
 import pandas as pd
 
 NAME_INDEX = "./name_index.csv"
-DATASET = "../dataset"
+DATASET = "../dataset_2"
 
 if __name__ == "__main__":
     # load name_index.csv
     df = pd.read_csv(NAME_INDEX)
-
-    # create scrawled_count column if first run
-    df["scrawled_count"] = 0
 
     # for each individual directory (named by id) in dataset directory
     # count number of images in it and update scrawled_count
