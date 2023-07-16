@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 NAME_INDEX = "./name_index.csv"
-DATASET = "../dataset_2"
+DATASET = "../dataset_12"
 
 if __name__ == "__main__":
     # load name_index.csv

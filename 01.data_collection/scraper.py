@@ -6,7 +6,7 @@ import time
 # paths
 IMAGE_DIR = "./images"
 NAME_INDEX = "./name_index.csv"
-DATASET = "../dataset_2"
+DATASET = "../dataset_12"
 
 if __name__ == "__main__":
     # create image directory (if not exist)
