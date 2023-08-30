@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ipykernel = "*"
+requests = "*"
+numpy = "*"
+pandas = "*"
+bs4 = "*"
+icrawler = "*"
+jupyter-black = "*"
+matplotlib = "*"
+lxml = "*"
+scipy = "*"
+torch = "*"
+torchvision = "*"
+facenet-pytorch = "*"
+opencv-python = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
