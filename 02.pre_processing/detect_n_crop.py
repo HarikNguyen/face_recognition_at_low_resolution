@@ -89,7 +89,7 @@ class DetectNCropThreading(threading.Thread):
             print(f"Detected and cropped {name_index}!\n")
 
 
-num_thread = 2
+num_thread = 4
 dataset_list = sorted(os.listdir(DATASET))
 # split dataset_list into num_thread parts
 dataset_parts = [dataset_list[i::num_thread] for i in range(num_thread)]
