@@ -1,3 +1,4 @@
+import threading
 import os
 import pandas as pd
 import cv2
@@ -24,21 +25,12 @@ print(f"Detect with {device}...\n")
 
 mtcnn = MTCNN(thresholds=[0.7, 0.7, 0.8], keep_all=True, device=device)
 
-for i, name in enumerate(sorted(os.listdir(DATASET))):
-    path_to_save = os.path.join(IMAGE_DIR, str(name))
-    # if name in name_index not exist, create it
-    if not df.loc[i, "detected"]:
-        # create folder or remove all files in folder
-        os.makedirs(path_to_save, exist_ok=True)
-        # remove all files in folder
-        for file in os.listdir(path_to_save):
-            os.remove(os.path.join(path_to_save, file))
 
-    print(f"Detecting and cropping {name}...")
+def detect_n_crop(dir_in, dir_path_out):
     counter = 0
-    for j, img_name in enumerate(sorted(os.listdir(os.path.join(DATASET, name)))):
-        in_img_path = os.path.join(DATASET, name, img_name)
-        print(f"{j} - {in_img_path}")
+    for i, img_name in enumerate(sorted(os.listdir(dir_in))):
+        in_img_path = os.path.join(dir_in, img_name)
+        print(f"{i} - {in_img_path}")
 
         # load image
         img = cv2.imread(in_img_path)
@@ -53,12 +45,14 @@ for i, name in enumerate(sorted(os.listdir(DATASET))):
             continue
         for box in boxes:
             counter += 1
-            out_img_path = os.path.join(path_to_save, f"{counter}.jpg")
+            out_img_path = os.path.join(dir_path_out, f"{counter}.jpg")
             x1, y1, x2, y2 = box
             face = img[int(y1) : int(y2), int(x1) : int(x2)].copy()
             # convert to BGR
             try:
                 face = cv2.cvtColor(face, cv2.COLOR_RGB2BGR)
+                # resize to 250x250
+                face = cv2.resize(face, (250, 250))
                 cv2.imwrite(out_img_path, face)
                 print(f"saved {img_name}!")
             except:
@@ -68,8 +62,45 @@ for i, name in enumerate(sorted(os.listdir(DATASET))):
             torch.cuda.empty_cache()
         del img
 
-    # update detected column
-    df.loc[i, "detected"] = True
-    # save name_index.csv
-    df.to_csv(NAME_INDEX, index=False)
-    print(f"Detected and cropped {name}!\n")
+    print(f"Detected and cropped {dir_in}!\n")
+
+
+class DetectNCropThreading(threading.Thread):
+    def __init__(self, dataset_part):
+        threading.Thread.__init__(self)
+        self.dataset_part = dataset_part
+
+    def run(self):
+        for name_index in self.dataset_part:
+            dir_in = os.path.join(DATASET, str(name_index))
+            dir_path_out = os.path.join(IMAGE_DIR, str(name_index))
+            if not df.loc[int(name_index), "detected"]:
+                # create folder or remove all files in folder
+                os.makedirs(dir_path_out, exist_ok=True)
+                # remove all files in folder
+                for file in os.listdir(dir_path_out):
+                    os.remove(os.path.join(dir_path_out, file))
+            print(f"Detecting and cropping {name_index}...")
+            detect_n_crop(dir_in, dir_path_out)
+            # update detected column
+            df.loc[int(name_index), "detected"] = True
+            # save name_index.csv
+            df.to_csv(NAME_INDEX, index=False)
+            print(f"Detected and cropped {name_index}!\n")
+
+
+num_thread = 2
+dataset_list = sorted(os.listdir(DATASET))
+# split dataset_list into num_thread parts
+dataset_parts = [dataset_list[i::num_thread] for i in range(num_thread)]
+
+# create threads to detect and crop
+detected_list = []
+for i in range(num_thread):
+    thread = DetectNCropThreading(dataset_parts[i])
+    thread.start()
+    detected_list.append(thread)
+
+# wait for all threads to complete
+for thread in detected_list:
+    thread.join()
