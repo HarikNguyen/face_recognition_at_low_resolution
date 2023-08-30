@@ -166,6 +166,7 @@ cython_debug/
 dataset/
 # all dataset with form dataset_*
 dataset_*/
+images_*/
 
 # CSV except name_index.csv
 *.csv
