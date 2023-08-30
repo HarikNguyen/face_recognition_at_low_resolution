@@ -170,6 +170,7 @@ dataset_*/
 # CSV except name_index.csv
 *.csv
 !01.data_collection/name_index.csv
+!02.pre_processing/name_index.csv
 
 # All files .zip .tar .gz .rar
 *.zip

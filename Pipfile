@@ -13,6 +13,11 @@ icrawler = "*"
 jupyter-black = "*"
 matplotlib = "*"
 lxml = "*"
+scipy = "*"
+torch = "*"
+torchvision = "*"
+facenet-pytorch = "*"
+opencv-python = "*"
 
 [dev-packages]
 
