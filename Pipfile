@@ -18,6 +18,7 @@ torch = "*"
 torchvision = "*"
 facenet-pytorch = "*"
 opencv-python = "*"
+argparse = "*"
 
 [dev-packages]
 

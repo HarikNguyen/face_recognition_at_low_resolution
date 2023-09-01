@@ -5,9 +5,9 @@ import cv2
 import torch
 from facenet_pytorch import MTCNN
 
-DATASET = "../dataset_12"
+DATASET = "../dataset_0"
 NAME_INDEX = "./name_index.csv"
-IMAGE_DIR = "../images_12"
+IMAGE_DIR = "../images"
 
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
@@ -30,18 +30,18 @@ def detect_n_crop(dir_in, dir_path_out):
     counter = 0
     for i, img_name in enumerate(sorted(os.listdir(dir_in))):
         in_img_path = os.path.join(dir_in, img_name)
-        print(f"{i} - {in_img_path}")
 
         # load image
         img = cv2.imread(in_img_path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
+        try:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        except:
+            continue
         # detect face
         boxes, probs = mtcnn.detect(img)
 
         # crop face
         if boxes is None:
-            print(f"{img_name} has no face!")
             continue
         for box in boxes:
             counter += 1
@@ -54,7 +54,6 @@ def detect_n_crop(dir_in, dir_path_out):
                 # resize to 250x250
                 face = cv2.resize(face, (250, 250))
                 cv2.imwrite(out_img_path, face)
-                print(f"saved {img_name}!")
             except:
                 counter -= 1
             # release memory
@@ -80,13 +79,14 @@ class DetectNCropThreading(threading.Thread):
                 # remove all files in folder
                 for file in os.listdir(dir_path_out):
                     os.remove(os.path.join(dir_path_out, file))
+            else:
+                continue
             print(f"Detecting and cropping {name_index}...")
             detect_n_crop(dir_in, dir_path_out)
             # update detected column
             df.loc[int(name_index), "detected"] = True
             # save name_index.csv
             df.to_csv(NAME_INDEX, index=False)
-            print(f"Detected and cropped {name_index}!\n")
 
 
 num_thread = 4

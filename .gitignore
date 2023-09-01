@@ -167,6 +167,7 @@ dataset/
 # all dataset with form dataset_*
 dataset_*/
 images_*/
+images/
 
 # CSV except name_index.csv
 *.csv
