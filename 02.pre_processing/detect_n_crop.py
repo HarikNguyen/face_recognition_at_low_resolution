@@ -5,7 +5,7 @@ import cv2
 import torch
 from facenet_pytorch import MTCNN
 
-DATASET = "../dataset_0"
+DATASET = "../dataset_3"
 NAME_INDEX = "./name_index.csv"
 IMAGE_DIR = "../images"
 
@@ -21,7 +21,7 @@ if "detected" not in df.columns:
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-print(f"Detect with {device}...\n")
+print(f"Detect {DATASET.replace('..','').replace('/','')} with {device}...\n")
 
 mtcnn = MTCNN(thresholds=[0.7, 0.7, 0.8], keep_all=True, device=device)
 

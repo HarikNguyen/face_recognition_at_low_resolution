@@ -38,18 +38,26 @@ def stats(config):
     # update name_index.csv file
     df.to_csv(NAME_INDEX, index=False)
 
+    print("\n\t\t\033[01m\033[37m Statistics\033[37m\033[00m\n")
     # print time of last update
-    print(f"Last updated: {time.ctime(os.path.getmtime(NAME_INDEX))}")
+    print(
+        f"\033[96m Last updated:\033[00m \033[95m{time.ctime(os.path.getmtime(NAME_INDEX))}\033[00m"
+    )
     # print sum of detected_count
-    print(f"Total detected images: {df['detected_count'].sum()}/{len(df)}")
+    print(
+        f"\033[96m Total detected images::\033[00m \033[95m{df['detected_count'].sum()}\033[00m"
+    )
     # print individual was detected
-    print(f"Total detected individuals: {len(df[df['detected'] == True])}")
+    detected_num = len(df[df["detected"] == True])
+    total_num = len(df)
+    percent = detected_num / total_num * 100
+    print(
+        f"\033[96m Total detected individuals:\033[00m \033[95m{detected_num}/{total_num} \033[00m|| \033[92m{percent:.2f}%\033[00m"
+    )
 
     # get size of dataset dir
     size = get_dir_size(DATASET) / 1024 / 1024 / 1024
-    print(f"Total size of dataset: ~{size:.2f} GB")
-
-    print(df.loc[124, :])
+    print(f"\033[96m Total size of dataset:\033[00m \033[95m~{size:.2f} GB\033[00m")
 
 
 if __name__ == "__main__":
