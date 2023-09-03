@@ -23,35 +23,47 @@ if not os.path.exists("face_list.json"):
 
 
 def detect_n_crop(dir_in, name_index):
-    with open("face_list.json", "r") as f:
-        # read face_list.json and check if name_index is in it
-        face_list = json.load(f)
-        if str(name_index) in face_list.keys():
-            return
-        # if not, detect and update face_list.json
-        img_face_dict = {}
-        for img_name in sorted(os.listdir(dir_in)):
-            in_img_path = os.path.join(dir_in, img_name)
-            # load image
-            img = cv2.imread(in_img_path)
-            try:
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            except:
-                continue
-            # detect face
-            boxes, _ = mtcnn.detect(img)
+    face_list = {}
+    # read face_list.json
+    try:
+        with open("face_list.json", "r") as f:
+            face_list = json.load(f)
+            f.close()
+    except:
+        print("Error in reading face_list.json")
+        return
+    # check if name_index is in it
+    if str(name_index) in face_list.keys():
+        return
+    # if not, detect and update face_list.json
+    img_face_dict = {}
+    for img_name in sorted(os.listdir(dir_in)):
+        in_img_path = os.path.join(dir_in, img_name)
+        # load image
+        img = cv2.imread(in_img_path)
+        try:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        except:
+            continue
+        # detect face
+        boxes, _ = mtcnn.detect(img)
 
-            # crop face
-            if boxes is None:
-                continue
-            img_face_dict[img_name] = boxes.tolist()
-            torch.cuda.empty_cache()
-            del img
-        face_list[name_index] = img_face_dict
-        print(f"Detected and cropped {dir_in}!\n")
+        # crop face
+        if boxes is None:
+            continue
+        img_face_dict[img_name] = boxes.tolist()
+        torch.cuda.empty_cache()
+        del img
+    face_list[name_index] = img_face_dict
+    print(f"Detected and cropped {dir_in}!\n")
+    try:
         # update face_list.json
         with open("face_list.json", "w") as f:
             json.dump(face_list, f)
+            f.close()
+    except:
+        print("Error in updating face_list.json")
+        return
 
 
 class DetectNCropThreading(threading.Thread):
